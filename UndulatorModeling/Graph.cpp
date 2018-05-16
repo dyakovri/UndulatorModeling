@@ -14,7 +14,7 @@ Graph::Graph(PictureBox ^pb)
 
 void Graph::Clear()
 {
-	gr->Clear(System::Drawing::Color::White);
+	gr->Clear(pb->BackColor);
 }
 
 void Graph::Setup(String ^xAxisName, double xAxisMaxVal, String ^yAxisName, double yAxisMaxVal)
@@ -32,7 +32,7 @@ void Graph::Setup(String ^xAxisName, double xAxisMaxVal, String ^yAxisName, doub
 	gridStepY = pb->Height / 10;
 }
 
-void Graph::MakeGrid()
+void Graph::MakeGrid(int n, double l, bool isFirstRed)
 {
 	if (this->grScaleX == 0)
 	{
@@ -41,6 +41,13 @@ void Graph::MakeGrid()
 	if (this->grScaleY == 0)
 	{
 		this->grScaleY = gridStepY;
+	}
+
+	for (int i = 0; i < n; i++) {
+		Color c1 = Color::LightPink;
+		Color c2 = Color::DeepSkyBlue;
+		AddRect(i*(int)l, 500, (int)l+1, 1000, isFirstRed ? c1 : c2);
+		isFirstRed = !isFirstRed;
 	}
 
 	for (int i = grCenter.X; (i >= grFields) && (i <= (pb->Width - grFields)); i += gridStepX)
@@ -103,4 +110,15 @@ bool Graph::AddGraphDot(double x, double y)
 bool Graph::AddGraphDot(double x, double y, Color c)
 {
 	return AddDot(safe_cast<int>(safe_cast<double>(gridStepX) / grScaleX * x), safe_cast<int>(safe_cast<double>(gridStepY) / grScaleY * y), c);
+}
+
+bool Graph::AddRect(int x, int y, int dx, int dy, Color c)
+{
+	x = safe_cast<int>(safe_cast<double>(gridStepX) / grScaleX * (x + grCenter.X));
+	y = safe_cast<int>(safe_cast<double>(gridStepY) / grScaleY * (-y + grCenter.X));
+	dx = safe_cast<int>(safe_cast<double>(gridStepX) / grScaleX * dx);
+	dy = safe_cast<int>(safe_cast<double>(gridStepY) / grScaleY * dy);
+
+	gr->FillRectangle(gcnew SolidBrush(c), x, y, dx, dy);
+	return true;
 }

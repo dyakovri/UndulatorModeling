@@ -241,7 +241,7 @@ namespace UndulatorModeling {
 			this->edit_n->Name = L"edit_n";
 			this->edit_n->Size = System::Drawing::Size(81, 20);
 			this->edit_n->TabIndex = 3;
-			this->edit_n->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 30, 0, 0, 0 });
+			this->edit_n->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 4, 0, 0, 0 });
 			// 
 			// edit_lu
 			// 
@@ -323,22 +323,23 @@ namespace UndulatorModeling {
 			this->edit_l_max->DecimalPlaces = 2;
 			this->edit_l_max->Location = System::Drawing::Point(267, 61);
 			this->edit_l_max->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 100000, 0, 0, 0 });
-			this->edit_l_max->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 100000, 0, 0, System::Int32::MinValue });
+			this->edit_l_max->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1, 0, 0, 131072 });
 			this->edit_l_max->Name = L"edit_l_max";
 			this->edit_l_max->Size = System::Drawing::Size(81, 20);
 			this->edit_l_max->TabIndex = 15;
-			this->edit_l_max->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 10, 0, 0, 0 });
+			this->edit_l_max->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 30, 0, 0, 0 });
 			// 
 			// edit_y_max
 			// 
 			this->edit_y_max->DecimalPlaces = 2;
+			this->edit_y_max->Increment = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1, 0, 0, 131072 });
 			this->edit_y_max->Location = System::Drawing::Point(267, 36);
 			this->edit_y_max->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 100000, 0, 0, 0 });
-			this->edit_y_max->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 100000, 0, 0, System::Int32::MinValue });
+			this->edit_y_max->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1, 0, 0, 131072 });
 			this->edit_y_max->Name = L"edit_y_max";
 			this->edit_y_max->Size = System::Drawing::Size(81, 20);
 			this->edit_y_max->TabIndex = 16;
-			this->edit_y_max->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1, 0, 0, 0 });
+			this->edit_y_max->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1, 0, 0, 131072 });
 			// 
 			// label_edit_l_max
 			// 
@@ -463,8 +464,8 @@ namespace UndulatorModeling {
 			StopBtn->Enabled = !StopBtn->Enabled;
 
 			qp = new qParticle(
-				(double)edit_m->Value* 1.78E-36,
-				(double)edit_q->Value*1.6E-19,
+				(double)edit_m->Value,// *1.78E-36,
+				(double)edit_q->Value,// *1.6E-19,
 				(double)edit_vx->Value,
 				(double)edit_b->Value,
 				(double)edit_n->Value,
@@ -473,11 +474,14 @@ namespace UndulatorModeling {
 			graph1 = gcnew Graph(pictureBox1);
 			graph2 = gcnew Graph(pictureBox2);
 
-			graph1->Setup("X", (double)edit_n->Value * (double)edit_lu->Value, "Y", (double)edit_y_max->Value);
-			graph2->Setup("X", (double)edit_n->Value * (double)edit_lu->Value, "L", (double)edit_l_max->Value);
+			graph1->Setup("X", (double)edit_n->Value * (double)edit_lu->Value, "Y", (double)edit_y_max->Value*2);
+			graph2->Setup("X", (double)edit_n->Value * (double)edit_lu->Value, "L", (double)edit_l_max->Value*2);
 
-			graph1->MakeGrid();
-			graph2->MakeGrid();
+			graph1->Clear();
+			graph2->Clear();
+
+			graph1->MakeGrid((int)edit_n->Value, (double)edit_lu->Value, edit_b->Value > 0);
+			graph2->MakeGrid((int)edit_n->Value, (double)edit_lu->Value, edit_b->Value > 0);
 			
 			timer1->Start();
 		}
@@ -487,6 +491,10 @@ namespace UndulatorModeling {
 			StopBtn->Enabled = !StopBtn->Enabled;
 
 			timer1->Stop();
+
+			graph1->Clear();
+			graph2->Clear();
+
 		}
 
 		private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
@@ -494,6 +502,10 @@ namespace UndulatorModeling {
 			graph1->AddGraphDot(
 				qp->get_x(),
 				qp->get_y()
+			);
+			graph2->AddGraphDot(
+				qp->get_x(),
+				qp->get_L()
 			);
 		}
 	};

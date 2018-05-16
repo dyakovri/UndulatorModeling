@@ -21,10 +21,11 @@ public:
 	Graph(PictureBox ^pb);
 	void Clear();
 	void Setup(String ^xAxisName, double xAxisMaxVal, String ^yAxisName, double yAxisMaxVal);
-	void MakeGrid();
+	void MakeGrid(int, double, bool);
 	void AddString(int x, int y, String ^s);
 	void AddString(int x, int y, String ^s, Color c);
 	bool AddDot(int x, int y, Color c);
 	bool AddGraphDot(double x, double y);
 	bool AddGraphDot(double x, double y, Color c);
+	bool AddRect(int x, int y, int dx, int dy, Color c);
 };
