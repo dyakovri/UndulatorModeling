@@ -11,8 +11,3 @@ void main() {
 	UndulatorModeling::MyForm form;
 	Application::Run(%form);
 }
-
-/*
-TODO:
-Сделать цветную заливку графиков
-*/

@@ -8,6 +8,10 @@ class qParticle : public RKMethod {
 	double B, n, lu;
 	double tx,ttx;
 
+	template <typename T> int sgn(T val) {
+		return (T(0) < val) - (val < T(0));
+	}
+
 public:
 	qParticle(double m, double q, double Vx, double B, double n, double lu) : RKMethod(4) {
 		this->m = m;
@@ -21,7 +25,7 @@ public:
 		Y0[0] = 0.;
 		Y0[1] = 0.;
 		Y0[2] = Vx;
-		Y0[3] = q*B*lu/(2*m);
+		Y0[3] = q * B * lu / (2 * m);
 
 		tx = 0;
 		ttx = 0;
@@ -35,16 +39,20 @@ public:
 		// dx/dt - FY[0] , dy/dt - FY[1] , dVx/dt - FY[2] , dVy/dt - FY[3]
 
 		if (tx >= lu) {
-			tx = 0;
-			ttx = Y[0];
 			B = -B;
+			tx = 0;
+			FY[0] = Y[0] = ((int)(Y[0] / lu)) * lu;
+			FY[1] = Y[1] = 0;
+			FY[2] = Y[2] - Vx;
+			FY[3] = Y[3] = sgn(Y[3]) * fabs(q * B * lu / (2 * m));
+			ttx = ((int)(Y[0] / lu)) * lu;
 		}
-
-
-		FY[0] = Y[2];
-		FY[1] = Y[3];
-		FY[2] = 0;
-		FY[3] = -B * Y[2] * q / m; 
+		else {
+			FY[0] = Y[2];
+			FY[1] = Y[3];
+			FY[2] = 0;
+			FY[3] = -B * Y[2] * q / m;
+		}
 
 		/*
 		FY[0] = Y[2];
